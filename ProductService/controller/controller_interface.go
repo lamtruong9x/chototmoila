@@ -8,4 +8,5 @@ type Controller interface {
 	//GetList(c *gin.Context)
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
+	GetByID(c *gin.Context)
 }

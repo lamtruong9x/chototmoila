@@ -5,6 +5,7 @@ import (
 	"chotot_product_ltruong/entity"
 	"chotot_product_ltruong/service"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"strconv"
@@ -71,8 +72,24 @@ func (ctrl *controller) GetByUserID(c *gin.Context) {
 	c.JSON(http.StatusOK, products)
 }
 
-func (ctrl *controller) GetByName(c *gin.Context) {
+func (ctr *controller) GetByID(c *gin.Context) {
+	idString := c.Param("id")
 
+	productID, err := strconv.Atoi(idString)
+	if err != nil || productID < 1 {
+		c.JSON(http.StatusBadRequest, err)
+	}
+
+	product, err := ctr.Service.GetByID(productID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(200, product)
 }
 
 func (ctrl *controller) Update(c *gin.Context) {

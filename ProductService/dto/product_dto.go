@@ -3,7 +3,7 @@ package dto
 import "time"
 
 type Product struct {
-	Id          int       `json:"id,omitempty" gorm:"primary_key;auto_increment"`
+	//Id          int       `json:"id,omitempty" gorm:"primary_key;auto_increment"`
 	ProductName string    `json:"product_name,omitempty" gorm:"type:varchar(255);not null" binding:"required"`
 	UserId      int       `json:"user_id,omitempty" gorm:"type:int"`
 	CatId       string    `json:"cat_id,omitempty" gorm:"type:VARCHAR(10)" binding:"required"`
@@ -15,6 +15,7 @@ type Product struct {
 	Priority    bool      `json:"priority,omitempty" gorm:"type:boolean"`
 	Address     string    `json:"address,omitempty" gorm:"type:varchar(255)"`
 	Content     string    `json:"content,omitempty" gorm:"type:varchar(255)"`
+	//Images      []string  `json:"images"` // Newly added
 }
 
 type ProductUpdate struct {
@@ -28,6 +29,6 @@ type ProductUpdate struct {
 	CreatedTime time.Time `json:"created_time,omitempty" gorm:"type:timestamp,autoCreateTime"`
 	ExpiredTime time.Time `json:"expired_time,omitempty" gorm:"type:timestamp"`
 	Address     string    `json:"address,omitempty" gorm:"type:varchar(255)"`
-	Priority    bool      `json:"priority,omitempty" gorm:"type:boolean"`
+	Priority    bool      `json:"-" gorm:"type:boolean"`
 	Content     string    `json:"content,omitempty" gorm:"type:varchar(255)"`
 }

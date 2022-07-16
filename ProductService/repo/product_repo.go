@@ -35,6 +35,16 @@ func (r *repo) GetByUserID(userID int, limit, offset int) ([]*entity.Product, er
 	return products, nil
 }
 
+func (r *repo) GetByID(productID int) (*entity.Product, error) {
+	var product entity.Product
+	tx := r.DB.First(&product, productID)
+	if err := tx.Error; err != nil {
+		fmt.Printf("buggggg")
+		return nil, err
+	}
+	return &product, nil
+}
+
 func (r *repo) Update(userID int, product *entity.Product) (*entity.Product, error) {
 	var output entity.Product
 
@@ -42,11 +52,12 @@ func (r *repo) Update(userID int, product *entity.Product) (*entity.Product, err
 	if userID != product.UserId {
 		return nil, errors.New("invalid user")
 	}
-	//fmt.Println(product.Id)
+
 	if err := r.DB.Where("id = ?", product.Id).First(&output).Error; err != nil {
 		return nil, err
 	}
 	err := smapping.FillStruct(&output, smapping.MapFields(product))
+
 	if err != nil {
 		return nil, err
 	}

@@ -19,8 +19,8 @@ func (svc *service) Create(product *dto.Product) error {
 	return svc.Repo.Create(product)
 }
 
-func (svc *service) Get() {
-
+func (svc *service) GetByID(productID int) (*entity.Product, error) {
+	return svc.Repo.GetByID(productID)
 }
 
 func (svc *service) GetByUserID(userID int, limit, offset int) ([]*entity.Product, error) {

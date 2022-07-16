@@ -7,7 +7,7 @@ import (
 
 type Service interface {
 	Create(product *dto.Product) error
-	//Get(any)
+	GetByID(productID int) (*entity.Product, error)
 	GetByUserID(userID int, limit, offset int) ([]*entity.Product, error)
 	Update(product *dto.ProductUpdate) (*entity.Product, error)
 	Delete(id int) error

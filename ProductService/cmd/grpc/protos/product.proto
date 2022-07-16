@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./ProductService/cmd/grpc/protos";
+
+service Product {
+  rpc GetProduct(GetProductRequest) returns (GetProductResponse) {};
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse) {};
+  rpc UpdateProduct(UpdateProductRequest) returns (ProductEntity) {};
+}
+
+message CreateProductRequest {
+  string ProductName = 1;
+  string CatId = 2;
+  string TypeId = 3;
+  double Price = 4;
+  bool State = 5;
+  google.protobuf.Timestamp CreatedTime = 6;
+  google.protobuf.Timestamp ExpiredTime = 7;
+  string Address = 8;
+  string Content = 9;
+}
+
+message CreateProductResponse {
+  string message = 1;
+}
+
+message UpdateProductRequest {
+  string ProductName = 1;
+  string CatId = 2;
+  string TypeId = 3;
+  double Price = 4;
+  bool State = 5;
+  google.protobuf.Timestamp ExpiredTime = 6;
+  string Address = 7;
+  string Content = 8;
+}
+
+message GetProductRequest {
+  int32 offset = 1;
+}
+
+message GetProductResponse {
+  repeated ProductEntity products = 1;
+}
+
+message ProductEntity {
+  int32  Id = 1;
+  string ProductName = 2;
+  string CatId = 3;
+  string TypeId = 4;
+  double Price = 5;
+  bool State = 6;
+  google.protobuf.Timestamp CreatedTime = 7;
+  google.protobuf.Timestamp ExpiredTime = 8;
+  bool priority = 9;
+  string Address = 10;
+  string Content = 11;
+  repeated string Images = 12;
+}

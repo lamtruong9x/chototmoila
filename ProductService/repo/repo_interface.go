@@ -10,4 +10,5 @@ type Repo interface {
 	GetByUserID(userID int, limit, offset int) ([]*entity.Product, error)
 	Update(userID int, product *entity.Product) (*entity.Product, error)
 	Delete(id int) error
+	GetByID(productID int) (*entity.Product, error)
 }
