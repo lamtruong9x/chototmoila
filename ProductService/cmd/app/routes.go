@@ -10,5 +10,6 @@ func (app *applicatiton) NewRouter() *gin.Engine {
 	//r.DELETE("user/products/:id", app.Controller.Delete)
 	r.GET("/products/:id", app.Controller.GetByID)
 	r.GET("user/products/search", app.Controller.Search)
+	r.GET("user/products/search-by", app.Controller.SearchBy)
 	return r
 }

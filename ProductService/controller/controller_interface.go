@@ -9,5 +9,9 @@ type Controller interface {
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
 	GetByID(c *gin.Context)
+
 	Search(c *gin.Context)
+
+	//Search 'param' by 'value'
+	SearchBy(c *gin.Context)
 }

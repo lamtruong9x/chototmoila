@@ -31,6 +31,8 @@ const (
 	ADDRESS_FIELD      = "address"
 	KEYWORD            = "k"
 	ADDRESS            = "a"
+	PARAM              = "param"
+	VALUE              = "value"
 )
 
 func (ctrl *controller) Create(c *gin.Context) {
@@ -134,10 +136,32 @@ func (ctrl *controller) Delete(c *gin.Context) {
 func (ctrl *controller) Search(c *gin.Context) {
 	keyword := "'%" + c.Query(KEYWORD) + "%'"
 	address := "'%" + c.Query(ADDRESS) + "%'"
+	if keyword == "'%%'" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
+		return
+	}
+
 	query := fmt.Sprintf("%s like %s", PRODUCT_NAME_FIELD, keyword)
 	if address != "'%%'" {
 		query += fmt.Sprintf(" and %s like %s", ADDRESS_FIELD, address)
 	}
+
+	products, _ := ctrl.Service.Seach(query)
+	fmt.Println(query)
+
+	c.JSON(http.StatusOK, gin.H{"data": products})
+}
+
+func (ctrl *controller) SearchBy(c *gin.Context) {
+	param := c.Query(PARAM)
+	value := c.Query(VALUE)
+
+	if param == "" || value == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
+		return
+	}
+
+	query := fmt.Sprintf("%s = %s", param, value)
 
 	products, _ := ctrl.Service.Seach(query)
 	fmt.Println(query)
