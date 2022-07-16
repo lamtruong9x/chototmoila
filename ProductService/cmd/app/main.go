@@ -5,16 +5,18 @@ import (
 	"chotot_product_ltruong/controller"
 	"chotot_product_ltruong/repo"
 	"chotot_product_ltruong/service"
+	"chotot_product_ltruong/token"
 	"log"
 )
 
-type applicatiton struct {
+type application struct {
 	Controller controller.Controller
 }
 
 const (
 	PORT      = ":8080"
 	GRPC_PORT = "5000"
+	secretKey = "3y6B8DbGdJfNjQmSqVsXu2x4z7C9EbHeKgNr"
 )
 
 func main() {
@@ -26,8 +28,11 @@ func main() {
 	// Create repo
 	repo1 := repo.New(db)
 	svc := service.New(&repo1)
-	ctrl := controller.New(svc)
-	app := applicatiton{
+	// create jwt maker
+	maker, err := token.NewJWTMaker(secretKey)
+	log.Fatal(err)
+	ctrl := controller.New(svc, maker)
+	app := application{
 		Controller: ctrl,
 	}
 	// grpc
@@ -39,7 +44,7 @@ func main() {
 	go grpc.Start(GRPC_PORT)
 	r := app.NewRouter()
 
-	err := r.Run(PORT)
+	err = r.Run(PORT)
 	log.Fatal(err)
 
 }

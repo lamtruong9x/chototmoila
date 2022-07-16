@@ -4,6 +4,7 @@ import (
 	"chotot_product_ltruong/dto"
 	"chotot_product_ltruong/entity"
 	"chotot_product_ltruong/service"
+	"chotot_product_ltruong/token"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,11 +16,12 @@ import (
 )
 
 type controller struct {
+	Maker   token.Maker
 	Service service.Service
 }
 
-func New(svc service.Service) *controller {
-	return &controller{Service: svc}
+func New(svc service.Service, maker token.Maker) *controller {
+	return &controller{Service: svc, Maker: maker}
 }
 
 // Hard coded for now
