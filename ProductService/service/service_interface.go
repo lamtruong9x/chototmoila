@@ -11,4 +11,5 @@ type Service interface {
 	GetByUserID(userID int, limit, offset int) ([]*entity.Product, error)
 	Update(product *dto.ProductUpdate) (*entity.Product, error)
 	Delete(id int) error
+	Seach(query string) ([]*entity.Product, error)
 }

@@ -9,5 +9,6 @@ func (app *applicatiton) NewRouter() *gin.Engine {
 	//r.PATCH("user/products", app.Controller.Update)
 	//r.DELETE("user/products/:id", app.Controller.Delete)
 	r.GET("/products/:id", app.Controller.GetByID)
+	r.GET("user/products/search", app.Controller.Search)
 	return r
 }

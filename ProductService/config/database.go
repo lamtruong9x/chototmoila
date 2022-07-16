@@ -2,16 +2,17 @@ package config
 
 import (
 	"fmt"
+	"log"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
 )
 
 var (
 	USER   = "root"
-	PASS   = "pass"
+	PASS   = ""
 	HOST   = "localhost"
-	PORT   = "3030"
+	PORT   = "3306"
 	DBNAME = "cho_tot"
 )
 

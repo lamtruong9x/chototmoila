@@ -11,4 +11,5 @@ type Repo interface {
 	Update(userID int, product *entity.Product) (*entity.Product, error)
 	Delete(id int) error
 	GetByID(productID int) (*entity.Product, error)
+	Search(query string) ([]*entity.Product, error)
 }

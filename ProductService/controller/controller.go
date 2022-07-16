@@ -4,12 +4,14 @@ import (
 	"chotot_product_ltruong/dto"
 	"chotot_product_ltruong/entity"
 	"chotot_product_ltruong/service"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type controller struct {
@@ -24,6 +26,11 @@ func New(svc service.Service) *controller {
 const (
 	userID       = 1
 	limitPerPage = 10
+
+	PRODUCT_NAME_FIELD = "product_name"
+	ADDRESS_FIELD      = "address"
+	KEYWORD            = "k"
+	ADDRESS            = "a"
 )
 
 func (ctrl *controller) Create(c *gin.Context) {
@@ -122,4 +129,18 @@ func (ctrl *controller) Delete(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "deleted"})
+}
+
+func (ctrl *controller) Search(c *gin.Context) {
+	keyword := "'%" + c.Query(KEYWORD) + "%'"
+	address := "'%" + c.Query(ADDRESS) + "%'"
+	query := fmt.Sprintf("%s like %s", PRODUCT_NAME_FIELD, keyword)
+	if address != "'%%'" {
+		query += fmt.Sprintf(" and %s like %s", ADDRESS_FIELD, address)
+	}
+
+	products, _ := ctrl.Service.Seach(query)
+	fmt.Println(query)
+
+	c.JSON(http.StatusOK, gin.H{"data": products})
 }

@@ -4,6 +4,7 @@ import (
 	"chotot_product_ltruong/dto"
 	"chotot_product_ltruong/entity"
 	"chotot_product_ltruong/repo"
+
 	"github.com/mashingan/smapping"
 )
 
@@ -39,4 +40,8 @@ func (svc *service) Update(product *dto.ProductUpdate) (*entity.Product, error) 
 
 func (svc *service) Delete(id int) error {
 	return svc.Repo.Delete(id)
+}
+
+func (svc *service) Seach(query string) ([]*entity.Product, error) {
+	return svc.Repo.Search(query)
 }

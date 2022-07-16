@@ -5,6 +5,7 @@ import (
 	"chotot_product_ltruong/entity"
 	"errors"
 	"fmt"
+
 	"github.com/mashingan/smapping"
 	"gorm.io/gorm"
 )
@@ -73,4 +74,10 @@ func (r *repo) Delete(id int) error {
 		return err
 	}
 	return nil
+}
+
+func (r *repo) Search(query string) ([]*entity.Product, error) {
+	var products []*entity.Product
+	err := r.DB.Where(query).Find(&products).Error
+	return products, err
 }
