@@ -3,6 +3,11 @@ module chotot_product_ltruong
 go 1.18
 
 require (
+	github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/google/uuid v1.3.0
+)
+
+require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.8.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect

@@ -33,6 +33,10 @@ const (
 	ADDRESS            = "a"
 	PARAM              = "param"
 	VALUE              = "value"
+
+	pid  = "cat_id"
+	cid  = "type_id"
+	user = "user_id"
 )
 
 func (ctrl *controller) Create(c *gin.Context) {
