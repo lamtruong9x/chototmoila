@@ -14,4 +14,7 @@ type Controller interface {
 
 	//Search 'param' by 'value'
 	SearchBy(c *gin.Context)
+
+	//middleware
+	Authorize() gin.HandlerFunc
 }

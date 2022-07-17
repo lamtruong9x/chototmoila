@@ -7,15 +7,16 @@ import (
 	"chotot_product_ltruong/service"
 	"context"
 	"fmt"
+	"log"
+	"net"
+	"net/http"
+
 	"github.com/mashingan/smapping"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"log"
-	"net"
-	"net/http"
 )
 
 type server struct {
@@ -95,7 +96,7 @@ func (s server) CreateProduct(c context.Context, r *protos.CreateProductRequest)
 // Limit 10 product per call
 const (
 	Limit  = 10
-	UserID = 1
+	UserID = 2
 )
 
 func (s server) GetProduct(c context.Context, r *protos.GetProductRequest) (*protos.GetProductResponse, error) {

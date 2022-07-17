@@ -9,10 +9,13 @@ import (
 )
 
 var (
-	USER   = "root"
-	PASS   = ""
-	HOST   = "localhost"
-	PORT   = "3306"
+	USER = "root"
+	// PASS   = "pass"
+	// PORT   = "3030"
+	PASS = ""
+	PORT = "3306"
+	HOST = "localhost"
+
 	DBNAME = "cho_tot"
 )
 

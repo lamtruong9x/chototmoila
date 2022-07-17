@@ -4,6 +4,7 @@ import (
 	"chotot_product_ltruong/dto"
 	"chotot_product_ltruong/entity"
 	"chotot_product_ltruong/service"
+	"chotot_product_ltruong/token"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,16 +16,16 @@ import (
 )
 
 type controller struct {
+	Maker   token.Maker
 	Service service.Service
 }
 
-func New(svc service.Service) *controller {
-	return &controller{Service: svc}
+func New(svc service.Service, maker token.Maker) *controller {
+	return &controller{Service: svc, Maker: maker}
 }
 
 // Hard coded for now
 const (
-	userID       = 1
 	limitPerPage = 10
 
 	PRODUCT_NAME_FIELD = "product_name"
@@ -47,8 +48,8 @@ func (ctrl *controller) Create(c *gin.Context) {
 		return
 	}
 
-	// Hard coded
-	input.UserId = userID
+	input.UserId = c.GetInt(userIDCtx)
+	fmt.Println(input.UserId)
 	input.CreatedTime = time.Now()
 	input.ExpiredTime = time.Now().Add(time.Hour * 24)
 
@@ -72,6 +73,7 @@ func (ctrl *controller) GetByUserID(c *gin.Context) {
 		pageNum = n
 	}
 	products := make([]*entity.Product, 0, 10)
+	userID := c.GetInt(userIDCtx)
 	products, err := ctrl.Service.GetByUserID(userID, limitPerPage, pageNum)
 	if len(products) == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"message": "you don't have any products to browse"})
