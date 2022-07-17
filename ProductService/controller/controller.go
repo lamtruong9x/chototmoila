@@ -35,6 +35,7 @@ const (
 	ADDRESS            = "a"
 	PARAM              = "param"
 	VALUE              = "value"
+	EXPIRED_TIME       = 24 * 30
 )
 
 func (ctrl *controller) Create(c *gin.Context) {
@@ -48,7 +49,7 @@ func (ctrl *controller) Create(c *gin.Context) {
 	// Hard coded
 	input.UserId = userID
 	input.CreatedTime = time.Now()
-	input.ExpiredTime = time.Now().Add(time.Hour * 24)
+	input.ExpiredTime = time.Now().Add(time.Hour * EXPIRED_TIME)
 
 	if err := ctrl.Service.Create(&input); err != nil {
 		log.Printf("Controller - Create: %v", err)
@@ -148,7 +149,7 @@ func (ctrl *controller) Search(c *gin.Context) {
 		query += fmt.Sprintf(" and %s like %s", ADDRESS_FIELD, address)
 	}
 
-	products, _ := ctrl.Service.Seach(query)
+	products, _ := ctrl.Service.Search(query)
 	fmt.Println(query)
 
 	c.JSON(http.StatusOK, gin.H{"data": products})
@@ -165,8 +166,8 @@ func (ctrl *controller) SearchBy(c *gin.Context) {
 
 	query := fmt.Sprintf("%s = %s", param, value)
 
-	products, _ := ctrl.Service.Seach(query)
-	fmt.Println(query)
+	products, _ := ctrl.Service.Search(query)
+	//fmt.Println(query)
 
 	c.JSON(http.StatusOK, gin.H{"data": products})
 }

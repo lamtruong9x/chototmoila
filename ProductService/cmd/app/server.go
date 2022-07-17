@@ -2,20 +2,24 @@ package main
 
 import (
 	"chotot_product_ltruong/cmd/grpc/protos"
+	"chotot_product_ltruong/controller"
 	"chotot_product_ltruong/dto"
 	"chotot_product_ltruong/entity"
 	"chotot_product_ltruong/service"
+	"chotot_product_ltruong/token"
 	"context"
 	"fmt"
 	"github.com/mashingan/smapping"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"net"
 	"net/http"
+	"strconv"
 )
 
 type server struct {
@@ -27,8 +31,20 @@ func NewServer(service service.Service) server {
 	return server{Service: service}
 }
 
-func (s server) Start(port string) {
-	server := grpc.NewServer()
+func (s server) Start(port string, jwtManager token.Maker) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered:", r)
+		}
+	}()
+	interceptor := controller.NewAuthInterceptor(jwtManager)
+
+	serverOptions := []grpc.ServerOption{
+		grpc.UnaryInterceptor(interceptor.Unary()),
+	}
+
+	server := grpc.NewServer(serverOptions...)
+	//server := grpc.NewServer()
 	protos.RegisterProductServer(server, s)
 	reflection.Register(server)
 	address := fmt.Sprintf("0.0.0.0:%s", port)
@@ -52,10 +68,10 @@ func productProtoToEntity(product *protos.CreateProductRequest) *entity.Product 
 		TypeId:      product.TypeId,
 		Price:       product.Price,
 		State:       product.State,
-		CreatedTime: product.CreatedTime.AsTime(),
-		ExpiredTime: product.ExpiredTime.AsTime(),
-		Address:     product.Address,
-		Content:     product.Content,
+		//CreatedTime: product.CreatedTime.AsTime(),
+		//ExpiredTime: product.ExpiredTime.AsTime(),
+		Address: product.Address,
+		Content: product.Content,
 	}
 }
 
@@ -77,13 +93,29 @@ func entityProtoToProto(product *entity.Product) *protos.ProductEntity {
 }
 
 func (s server) CreateProduct(c context.Context, r *protos.CreateProductRequest) (*protos.CreateProductResponse, error) {
-
 	product := productProtoToEntity(r)
+
 	productDTO := &dto.Product{}
 	if err := smapping.FillStruct(productDTO, smapping.MapFields(product)); err != nil {
 		log.Printf("gRPC-CreateProduct-smapping: %v", err.Error())
 		return nil, status.Error(codes.Internal, s.RichMessage(http.StatusInternalServerError, err))
 	}
+
+	md, ok := metadata.FromIncomingContext(c)
+	if !ok {
+		return nil, status.Errorf(codes.Unauthenticated, "CreateProduct: metadata is not provided")
+	}
+	//get user id from request
+	idString := md.Get(controller.UserIDCtx)
+	if len(idString) == 0 {
+		return nil, status.Errorf(codes.Unauthenticated, "CreateProduct: metadata is not provided")
+	}
+
+	UserID, err := strconv.Atoi(idString[0])
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "CreateProduct: metadata is not provided")
+	}
+	productDTO.UserId = UserID
 
 	if err := s.Service.Create(productDTO); err != nil {
 		log.Printf("gRPC-CreateProduct: %v", err.Error())
@@ -94,12 +126,22 @@ func (s server) CreateProduct(c context.Context, r *protos.CreateProductRequest)
 
 // Limit 10 product per call
 const (
-	Limit  = 10
-	UserID = 1
+	Limit = 10
 )
 
 func (s server) GetProduct(c context.Context, r *protos.GetProductRequest) (*protos.GetProductResponse, error) {
 	offset := int(r.Offset)
+
+	md, ok := metadata.FromIncomingContext(c)
+	if !ok {
+		return nil, status.Errorf(codes.Unauthenticated, "GetProduct: metadata is not provided")
+	}
+	idString := md.Get(controller.UserIDCtx)
+	UserID, err := strconv.Atoi(idString[0])
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "GetProduct: metadata is not provided")
+	}
+
 	products, err := s.Service.GetByUserID(UserID, Limit, offset)
 	if err != nil {
 		log.Printf("gRPC-GetProduct: %v", err.Error())
@@ -114,6 +156,14 @@ func (s server) GetProduct(c context.Context, r *protos.GetProductRequest) (*pro
 	return &protos.GetProductResponse{Products: protoProducts}, nil
 }
 
-func (s server) UpdateProduct(c context.Context, r *protos.UpdateProductRequest) (*protos.ProductEntity, error) {
-	return nil, nil
+func (s server) SearchProductBy(c context.Context, r *protos.SearchByRequest) (*protos.SearchByResponse, error) {
+	products, err := s.Service.Search(r.Query)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, s.RichMessage(http.StatusNotFound, err))
+	}
+	protoProducts := make([]*protos.ProductEntity, 0, Limit)
+	for _, p := range products {
+		protoProducts = append(protoProducts, entityProtoToProto(p))
+	}
+	return &protos.SearchByResponse{Products: protoProducts}, nil
 }

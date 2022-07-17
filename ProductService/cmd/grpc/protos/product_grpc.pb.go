@@ -24,7 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type ProductClient interface {
 	GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error)
 	CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error)
-	UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*ProductEntity, error)
+	//  rpc UpdateProduct(UpdateProductRequest) returns (ProductEntity) {};
+	SearchProductBy(ctx context.Context, in *SearchByRequest, opts ...grpc.CallOption) (*SearchByResponse, error)
 }
 
 type productClient struct {
@@ -53,9 +54,9 @@ func (c *productClient) CreateProduct(ctx context.Context, in *CreateProductRequ
 	return out, nil
 }
 
-func (c *productClient) UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*ProductEntity, error) {
-	out := new(ProductEntity)
-	err := c.cc.Invoke(ctx, "/Product/UpdateProduct", in, out, opts...)
+func (c *productClient) SearchProductBy(ctx context.Context, in *SearchByRequest, opts ...grpc.CallOption) (*SearchByResponse, error) {
+	out := new(SearchByResponse)
+	err := c.cc.Invoke(ctx, "/Product/SearchProductBy", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +69,8 @@ func (c *productClient) UpdateProduct(ctx context.Context, in *UpdateProductRequ
 type ProductServer interface {
 	GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error)
 	CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error)
-	UpdateProduct(context.Context, *UpdateProductRequest) (*ProductEntity, error)
+	//  rpc UpdateProduct(UpdateProductRequest) returns (ProductEntity) {};
+	SearchProductBy(context.Context, *SearchByRequest) (*SearchByResponse, error)
 	mustEmbedUnimplementedProductServer()
 }
 
@@ -82,8 +84,8 @@ func (UnimplementedProductServer) GetProduct(context.Context, *GetProductRequest
 func (UnimplementedProductServer) CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProduct not implemented")
 }
-func (UnimplementedProductServer) UpdateProduct(context.Context, *UpdateProductRequest) (*ProductEntity, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateProduct not implemented")
+func (UnimplementedProductServer) SearchProductBy(context.Context, *SearchByRequest) (*SearchByResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchProductBy not implemented")
 }
 func (UnimplementedProductServer) mustEmbedUnimplementedProductServer() {}
 
@@ -134,20 +136,20 @@ func _Product_CreateProduct_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Product_UpdateProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateProductRequest)
+func _Product_SearchProductBy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchByRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServer).UpdateProduct(ctx, in)
+		return srv.(ProductServer).SearchProductBy(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/Product/UpdateProduct",
+		FullMethod: "/Product/SearchProductBy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServer).UpdateProduct(ctx, req.(*UpdateProductRequest))
+		return srv.(ProductServer).SearchProductBy(ctx, req.(*SearchByRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -168,8 +170,8 @@ var Product_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Product_CreateProduct_Handler,
 		},
 		{
-			MethodName: "UpdateProduct",
-			Handler:    _Product_UpdateProduct_Handler,
+			MethodName: "SearchProductBy",
+			Handler:    _Product_SearchProductBy_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

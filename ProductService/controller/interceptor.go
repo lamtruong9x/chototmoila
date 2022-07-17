@@ -1,9 +1,10 @@
-package service
+package controller
 
 import (
 	"chotot_product_ltruong/token"
 	"context"
 	"log"
+	"strconv"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -30,8 +31,7 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 		log.Println("--> unary interceptor: ", info.FullMethod)
-
-		err := interceptor.authorize(ctx, info.FullMethod)
+		ctx, err := interceptor.authorize(ctx, info.FullMethod)
 		if err != nil {
 			return nil, err
 		}
@@ -41,41 +41,45 @@ func (interceptor *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 }
 
 // Stream returns a server interceptor function to authenticate and authorize stream RPC
-func (interceptor *AuthInterceptor) Stream() grpc.StreamServerInterceptor {
-	return func(
-		srv interface{},
-		stream grpc.ServerStream,
-		info *grpc.StreamServerInfo,
-		handler grpc.StreamHandler,
-	) error {
-		log.Println("--> stream interceptor: ", info.FullMethod)
+//func (interceptor *AuthInterceptor) Stream() grpc.StreamServerInterceptor {
+//	return func(
+//		srv interface{},
+//		stream grpc.ServerStream,
+//		info *grpc.StreamServerInfo,
+//		handler grpc.StreamHandler,
+//	) error {
+//		log.Println("--> stream interceptor: ", info.FullMethod)
+//
+//		err := interceptor.authorize(stream.Context(), info.FullMethod)
+//		if err != nil {
+//			return err
+//		}
+//
+//		return handler(srv, stream)
+//	}
+//}
 
-		err := interceptor.authorize(stream.Context(), info.FullMethod)
-		if err != nil {
-			return err
-		}
-
-		return handler(srv, stream)
-	}
-}
-
-func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string) error {
+func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string) (context.Context, error) {
 
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return status.Errorf(codes.Unauthenticated, "metadata is not provided")
+		return nil, status.Errorf(codes.Unauthenticated, "metadata is not provided")
 	}
 
 	values := md["authorization"]
 	if len(values) == 0 {
-		return status.Errorf(codes.Unauthenticated, "authorization token is not provided")
+		return nil, status.Errorf(codes.Unauthenticated, "authorization token is not provided")
 	}
 
 	accessToken := values[0]
 	claims, err := interceptor.jwtManager.VerifyToken(accessToken)
 	if err != nil {
-		return status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
+		return nil, status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
 	}
-	
-	return status.Error(codes.PermissionDenied, "no permission to access this RPC")
+
+	//add new value to incoming ctx
+	md.Append(UserIDCtx, strconv.Itoa(claims.UserID))
+	md.Append(IsAdminCtx, strconv.FormatBool(claims.IsAdmin))
+	newCtx := metadata.NewIncomingContext(ctx, md)
+	return newCtx, nil
 }
