@@ -69,10 +69,14 @@ func (r *repo) Update(userID int, product *entity.Product) (*entity.Product, err
 	return &output, nil
 }
 
-func (r *repo) Delete(id int) error {
-	if err := r.DB.Delete(&entity.Product{}, id).Error; err != nil {
+func (r *repo) Delete(productID, userID int) error {
+	//if err := r.DB.Delete(&entity.Product{}, id).Error; err != nil {
+	//	return err
+	//}
+	if err := r.DB.Where("product_id = ? AND user_id = ?", productID, userID).Delete(&entity.Product{}).Error; err != nil {
 		return err
 	}
+
 	return nil
 }
 

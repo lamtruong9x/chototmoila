@@ -26,7 +26,6 @@ func New(svc service.Service, maker token.Maker) *controller {
 
 // Hard coded for now
 const (
-	userID       = 1
 	limitPerPage = 10
 
 	PRODUCT_NAME_FIELD = "product_name"
@@ -42,21 +41,26 @@ func (ctrl *controller) Create(c *gin.Context) {
 	var input dto.Product
 	if err := c.ShouldBindJSON(&input); err != nil {
 		log.Printf("Controller - Create: %v", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Hard coded
+	userID := c.GetInt(UserIDCtx)
+	if userID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
+		return
+	}
 	input.UserId = userID
 	input.CreatedTime = time.Now()
 	input.ExpiredTime = time.Now().Add(time.Hour * EXPIRED_TIME)
+	input.Priority = false
 
 	if err := ctrl.Service.Create(&input); err != nil {
 		log.Printf("Controller - Create: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Server error"})
 		return
 	}
-	c.JSON(http.StatusCreated, nil)
+	c.JSON(http.StatusCreated, gin.H{"message": "product created"})
 }
 
 // Return 10 latest products each page
@@ -71,6 +75,13 @@ func (ctrl *controller) GetByUserID(c *gin.Context) {
 		pageNum = n
 	}
 	products := make([]*entity.Product, 0, 10)
+
+	userID := c.GetInt(UserIDCtx)
+	if userID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
+		return
+	}
+
 	products, err := ctrl.Service.GetByUserID(userID, limitPerPage, pageNum)
 	if len(products) == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"message": "you don't have any products to browse"})
@@ -128,7 +139,14 @@ func (ctrl *controller) Delete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
-	if err := ctrl.Service.Delete(id); err != nil {
+	// Get userID from ctx
+	userID := c.GetInt(UserIDCtx)
+	if userID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user id"})
+		return
+	}
+
+	if err := ctrl.Service.Delete(id, userID); err != nil {
 		log.Printf("Controller - Delete: %v\n", err)
 		c.JSON(http.StatusInternalServerError, nil)
 		return

@@ -43,8 +43,8 @@ func (svc *service) Update(product *dto.ProductUpdate) (*entity.Product, error) 
 	return svc.Repo.Update(1, input)
 }
 
-func (svc *service) Delete(id int) error {
-	return svc.Repo.Delete(id)
+func (svc *service) Delete(productID, userID int) error {
+	return svc.Repo.Delete(productID, userID)
 }
 
 func (svc *service) Search(query string) ([]*entity.Product, error) {

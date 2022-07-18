@@ -25,8 +25,13 @@ func (c controller) Authorize() gin.HandlerFunc {
 		}
 
 		payload, err := c.Maker.VerifyToken(tokenString)
+		if err != nil {
+			context.JSON(http.StatusUnauthorized, gin.H{"error": NOT_CONTAIN_ACCESS_TOKEN})
+			context.Abort()
+			return
+		}
 		fmt.Printf("Payload: %+v\n", payload)
-		context.Set(UserIDCtx, payload.ID)
+		context.Set(UserIDCtx, payload.UserID)
 		context.Set(IsAdminCtx, payload.IsAdmin)
 
 		if err != nil {
