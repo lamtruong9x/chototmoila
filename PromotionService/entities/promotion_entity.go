@@ -8,4 +8,6 @@ type PromotionEntity struct {
 	CreatedTime time.Time `gorm:"type:timestamp,autoCreateTime"`
 	ExpiredTime time.Time `gorm:"type:timestamp"`
 	LastUpdate  time.Time `gorm:"type:timestamp"`
+	IsApprove   bool      `gorm:"type:boolean"`
 }
+

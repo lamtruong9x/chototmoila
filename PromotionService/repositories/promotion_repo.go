@@ -6,7 +6,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type PromotionRepo interface{}
+type PromotionRepo interface {
+	Create(input *entity.PromotionEntity) error
+	Get(query string) ([]*entity.PromotionEntity, error)
+	Update(input *entity.PromotionEntity) error
+	Delete(id string) error
+}
 type promotionRepo struct {
 	db *gorm.DB
 }
