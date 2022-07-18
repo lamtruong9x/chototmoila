@@ -114,9 +114,27 @@ func (ctr *controller) GetByID(c *gin.Context) {
 	}
 	c.JSON(200, product)
 }
+func (ctrl *controller) Purchase(c *gin.Context) {
+	if !c.GetBool(IsAdminCtx) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "you are not allow for this function"})
+		return
+	}
+	var input dto.ProductUpdate
+	input.Priority = true
+	ctrl.superUpdate(&input, c)
+}
 
 func (ctrl *controller) Update(c *gin.Context) {
 	var input dto.ProductUpdate
+	if input.Priority != false {
+		c.JSON(http.StatusForbidden, gin.H{"error": "you are not allow for this function"})
+		return
+	}
+	ctrl.superUpdate(&input, c)
+
+}
+
+func (ctrl *controller) superUpdate(input *dto.ProductUpdate, c *gin.Context) {
 	if err := c.ShouldBindJSON(&input); err != nil {
 		log.Printf("Controller - Update: %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
@@ -132,7 +150,7 @@ func (ctrl *controller) Update(c *gin.Context) {
 	input.UserId = c.GetInt(UserIDCtx)
 	input.Id = id
 
-	product, err := ctrl.Service.Update(&input)
+	product, err := ctrl.Service.Update(input)
 	if err != nil {
 		log.Printf("Controller - Update: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})

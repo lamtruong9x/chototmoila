@@ -40,7 +40,7 @@ func (svc *service) Update(product *dto.ProductUpdate) (*entity.Product, error) 
 	if err != nil {
 		return nil, err
 	}
-	return svc.Repo.Update(1, input)
+	return svc.Repo.Update(product.UserId, input)
 }
 
 func (svc *service) Delete(productID, userID int) error {

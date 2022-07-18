@@ -107,7 +107,7 @@ func (s server) CreateProduct(c context.Context, r *protos.CreateProductRequest)
 		return nil, status.Errorf(codes.Unauthenticated, "CreateProduct: metadata is not provided")
 	}
 	//get user id from request
-	idString := md.Get(controller.UserIDCtx)
+	idString := md.Get(controller.UserIDCtx) 
 	if len(idString) == 0 {
 		return nil, status.Errorf(codes.Unauthenticated, "CreateProduct: metadata is not provided")
 	}

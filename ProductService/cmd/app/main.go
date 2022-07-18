@@ -14,7 +14,7 @@ type application struct {
 }
 
 const (
-	PORT      = ":8080"
+	PORT      = ":8081"
 	GRPC_PORT = "5000"
 	secretKey = "3y6B8DbGdJfNjQmSqVsXu2x4z7C9EbHeKgNr"
 )
