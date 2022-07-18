@@ -36,12 +36,8 @@ func main() {
 		Controller: ctrl,
 	}
 	// grpc
-	//db1 := config.InitDB()
-	//defer config.CloseDB(db1)
-	//repo2 := repo.New(db1)
-	//svc1 := service.New(&repo2)
 	grpc := NewServer(svc)
-	go grpc.Start(GRPC_PORT)
+	go grpc.Start(GRPC_PORT, maker)
 	r := app.NewRouter()
 
 	err = r.Run(PORT)

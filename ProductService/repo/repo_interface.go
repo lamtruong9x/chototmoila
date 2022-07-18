@@ -9,7 +9,8 @@ type Repo interface {
 	Create(product *dto.Product) error
 	GetByUserID(userID int, limit, offset int) ([]*entity.Product, error)
 	Update(userID int, product *entity.Product) (*entity.Product, error)
-	Delete(id int) error
+	Delete(productID, userID int) error
+	//Delete(id int) error
 	GetByID(productID int) (*entity.Product, error)
 	Search(query string) ([]*entity.Product, error)
 }

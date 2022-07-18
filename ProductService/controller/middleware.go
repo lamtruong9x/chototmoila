@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,8 +9,8 @@ import (
 const (
 	HEADER_KEY_AUTHORIZATION = "Authorization"
 	NOT_CONTAIN_ACCESS_TOKEN = "request does not contain an access token"
-	userIDCtx                = "userIDCtx"
-	isAdminCtx               = "isAdminCtx"
+	UserIDCtx                = "UserIDCtx"
+	IsAdminCtx               = "isAdminCtx"
 )
 
 func (c controller) Authorize() gin.HandlerFunc {
@@ -26,10 +25,14 @@ func (c controller) Authorize() gin.HandlerFunc {
 		}
 
 		payload, err := c.Maker.VerifyToken(tokenString)
-		fmt.Printf("Payload: %+v\n", payload)
-		fmt.Println("payload_id", payload.UserID)
-		context.Set(userIDCtx, payload.UserID)
-		context.Set(isAdminCtx, payload.IsAdmin)
+		if err != nil {
+			context.JSON(http.StatusUnauthorized, gin.H{"error": NOT_CONTAIN_ACCESS_TOKEN})
+			context.Abort()
+			return
+		}
+		//fmt.Printf("Payload: %+v\n", payload)
+		context.Set(UserIDCtx, payload.UserID)
+		context.Set(IsAdminCtx, payload.IsAdmin)
 
 		if err != nil {
 			context.JSON(http.StatusUnauthorized, gin.H{"error2 ": err.Error()})

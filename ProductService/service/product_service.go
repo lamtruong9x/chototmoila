@@ -4,6 +4,7 @@ import (
 	"chotot_product_ltruong/dto"
 	"chotot_product_ltruong/entity"
 	"chotot_product_ltruong/repo"
+	"time"
 
 	"github.com/mashingan/smapping"
 )
@@ -16,7 +17,11 @@ func New(repo repo.Repo) *service {
 	return &service{Repo: repo}
 }
 
+const EXPIRED_TIME = 24 * 30
+
 func (svc *service) Create(product *dto.Product) error {
+	product.CreatedTime = time.Now()
+	product.ExpiredTime = time.Now().Add(time.Hour * EXPIRED_TIME)
 	return svc.Repo.Create(product)
 }
 
@@ -38,10 +43,10 @@ func (svc *service) Update(product *dto.ProductUpdate) (*entity.Product, error) 
 	return svc.Repo.Update(1, input)
 }
 
-func (svc *service) Delete(id int) error {
-	return svc.Repo.Delete(id)
+func (svc *service) Delete(productID, userID int) error {
+	return svc.Repo.Delete(productID, userID)
 }
 
-func (svc *service) Seach(query string) ([]*entity.Product, error) {
+func (svc *service) Search(query string) ([]*entity.Product, error) {
 	return svc.Repo.Search(query)
 }
