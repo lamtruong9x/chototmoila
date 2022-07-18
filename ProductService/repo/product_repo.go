@@ -77,7 +77,7 @@ func (r *repo) Delete(productID, userID int) error {
 	//if err := r.DB.Delete(&entity.Product{}, id).Error; err != nil {
 	//	return err
 	//}
-	if err := r.DB.Where("product_id = ? AND user_id = ?", productID, userID).Delete(&entity.Product{}).Error; err != nil {
+	if err := r.DB.Where("id = ? AND user_id = ?", productID, userID).Delete(&entity.Product{}).Error; err != nil {
 		return err
 	}
 

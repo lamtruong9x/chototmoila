@@ -10,7 +10,7 @@ func (app *application) NewRouter() *gin.Engine {
 	{
 		userRouter.POST("/products", app.Controller.Create)
 		userRouter.PATCH("/products/:id", app.Controller.Update)
-		userRouter.DELETE("user/products/:id", app.Controller.Delete)
+		userRouter.DELETE("/products/:id", app.Controller.Delete)
 	}
 
 	//r.GET("user/products", app.Controller.GetByUserID)
