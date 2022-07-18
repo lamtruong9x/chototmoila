@@ -37,6 +37,8 @@ type input struct {
 	Password string `json:"password" binding:"required"`
 }
 
+const HEADER_KEY_AUTHORIZATION = "Authorization"
+
 // Done
 func (srv *Controller) Login(c *gin.Context) {
 	var input input
@@ -67,7 +69,7 @@ func (srv *Controller) Login(c *gin.Context) {
 	if err != nil {
 		srv.Log.Println(err)
 	}
-	c.Header("Authorization", tk)
+	c.Header(HEADER_KEY_AUTHORIZATION, tk)
 	c.JSON(http.StatusAccepted, gin.H{"Info": "Login successfully"})
 }
 
@@ -107,5 +109,14 @@ func (srv *Controller) CreateNewUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	// Get user from db
+	user, err := srv.Queries.GetUserByPhone(ctx, input.Phone)
+	// Add token
+	tk, _, err := srv.Token.CreateToken(int(user.ID), user.Phone, user.Isadmin, time.Minute*45)
+	if err != nil {
+		srv.Log.Println(err)
+	}
+	c.Header(HEADER_KEY_AUTHORIZATION, tk)
 	c.JSON(http.StatusCreated, "user created")
 }
