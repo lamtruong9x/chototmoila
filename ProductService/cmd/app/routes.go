@@ -9,7 +9,7 @@ func (app *application) NewRouter() *gin.Engine {
 	userRouter.Use(app.Controller.Authorize())
 	{
 		userRouter.POST("/products", app.Controller.Create)
-		userRouter.PATCH("/products", app.Controller.Update)
+		userRouter.PATCH("/products/:id", app.Controller.Update)
 		userRouter.DELETE("user/products/:id", app.Controller.Delete)
 	}
 

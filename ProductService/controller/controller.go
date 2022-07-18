@@ -122,6 +122,15 @@ func (ctrl *controller) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
+	// hand matching
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid product id"})
+		return
+	}
+	input.UserId = c.GetInt(UserIDCtx)
+	input.Id = id
 
 	product, err := ctrl.Service.Update(&input)
 	if err != nil {
@@ -136,7 +145,7 @@ func (ctrl *controller) Delete(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid product id"})
 		return
 	}
 	// Get userID from ctx

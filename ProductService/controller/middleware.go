@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -30,7 +29,7 @@ func (c controller) Authorize() gin.HandlerFunc {
 			context.Abort()
 			return
 		}
-		fmt.Printf("Payload: %+v\n", payload)
+		//fmt.Printf("Payload: %+v\n", payload)
 		context.Set(UserIDCtx, payload.UserID)
 		context.Set(IsAdminCtx, payload.IsAdmin)
 

@@ -57,16 +57,20 @@ func (r *repo) Update(userID int, product *entity.Product) (*entity.Product, err
 	if err := r.DB.Where("id = ?", product.Id).First(&output).Error; err != nil {
 		return nil, err
 	}
-	err := smapping.FillStruct(&output, smapping.MapFields(product))
 
+	err := smapping.FillStruct(&output, smapping.MapFields(product))
 	if err != nil {
 		return nil, err
 	}
 	if err := r.DB.Model(&output).Updates(&product).Error; err != nil {
 		return nil, err
 	}
-	fmt.Printf("%+v\n", output)
-	return &output, nil
+
+	product, err = r.GetByID(product.Id)
+	if err != nil {
+		return nil, err
+	}
+	return product, nil
 }
 
 func (r *repo) Delete(productID, userID int) error {
