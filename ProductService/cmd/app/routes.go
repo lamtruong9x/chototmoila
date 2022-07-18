@@ -13,6 +13,11 @@ func (app *application) NewRouter() *gin.Engine {
 		userRouter.DELETE("/products/:id", app.Controller.Delete)
 	}
 
+	purchaseRouter := r.Group("/purchase").Use(app.Controller.Authorize())
+	{
+		purchaseRouter.POST("/:id", app.Controller.Purchase)
+	}
+
 	//r.GET("user/products", app.Controller.GetByUserID)
 	//r.DELETE("user/products/:id", app.Controller.Delete)
 	r.GET("/products/:id", app.Controller.GetByID)

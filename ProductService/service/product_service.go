@@ -50,3 +50,8 @@ func (svc *service) Delete(productID, userID int) error {
 func (svc *service) Search(query string) ([]*entity.Product, error) {
 	return svc.Repo.Search(query)
 }
+
+func (svc *service) Purchase(product *dto.ProductUpdate) error {
+	_, err := svc.Update(product)
+	return err
+}

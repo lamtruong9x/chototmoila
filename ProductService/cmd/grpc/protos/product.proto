@@ -9,6 +9,7 @@ service Product {
   rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse) {};
 //  rpc UpdateProduct(UpdateProductRequest) returns (ProductEntity) {};
   rpc SearchProductBy(SearchByRequest) returns (SearchByResponse) {};
+  rpc Purchase(PurchaseRequest) returns (PurchaseResponse) {};
 }
 
 message CreateProductRequest {
@@ -65,4 +66,12 @@ message ProductEntity {
   string Address = 10;
   string Content = 11;
   repeated string Images = 12;
+}
+
+message PurchaseRequest{
+  string Id = 1
+}
+
+message PurchaseResponse{
+  string Error = 1
 }

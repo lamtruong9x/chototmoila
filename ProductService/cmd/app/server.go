@@ -107,7 +107,7 @@ func (s server) CreateProduct(c context.Context, r *protos.CreateProductRequest)
 		return nil, status.Errorf(codes.Unauthenticated, "CreateProduct: metadata is not provided")
 	}
 	//get user id from request
-	idString := md.Get(controller.UserIDCtx) 
+	idString := md.Get(controller.UserIDCtx)
 	if len(idString) == 0 {
 		return nil, status.Errorf(codes.Unauthenticated, "CreateProduct: metadata is not provided")
 	}
@@ -168,3 +168,12 @@ func (s server) SearchProductBy(c context.Context, r *protos.SearchByRequest) (*
 	}
 	return &protos.SearchByResponse{Products: protoProducts}, nil
 }
+
+// func (s server) Purchase(c context.Context, r *protos.PurchaseRequest) (*protos.PurchaseResponse, error) {
+// 	productID := r.GetId()
+// 	if err := s.Service.Purchase(productID); err != nil {
+// 		return nil, status.Errorf(codes.Internal, s.RichMessage(http.StatusNotFound, err))
+// 	}
+
+// 	return &protos.PurchaseResponse{Error: ""}, nil
+// }

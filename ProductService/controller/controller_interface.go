@@ -11,6 +11,7 @@ type Controller interface {
 	GetByID(c *gin.Context)
 
 	Search(c *gin.Context)
+	Purchase(c *gin.Context)
 
 	//Search 'param' by 'value'
 	SearchBy(c *gin.Context)

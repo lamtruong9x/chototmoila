@@ -13,4 +13,6 @@ type Service interface {
 	//Delete(id int) error
 	Delete(productID, userID int) error
 	Search(query string) ([]*entity.Product, error)
+
+	Purchase(product *dto.ProductUpdate) error
 }
