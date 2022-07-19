@@ -7,9 +7,9 @@ import (
 )
 
 type PromotionRepo interface {
-	Create(input *entity.PromotionEntity) error
-	Get(query string) ([]*entity.PromotionEntity, error)
-	Update(input *entity.PromotionEntity) error
+	Create(input *entity.Promotion) error
+	Get(query string) ([]*entity.Promotion, error)
+	Update(input *entity.Promotion) error
 	Delete(id string) error
 }
 type promotionRepo struct {
@@ -20,17 +20,17 @@ func NewPromotionRepo(db *gorm.DB) PromotionRepo {
 	return &promotionRepo{db: db}
 }
 
-func (rp *promotionRepo) Create(input *entity.PromotionEntity) error {
+func (rp *promotionRepo) Create(input *entity.Promotion) error {
 	return rp.db.Create(input).Error
 }
 
-func (rp *promotionRepo) Get(query string) ([]*entity.PromotionEntity, error) {
-	var results []*entity.PromotionEntity
+func (rp *promotionRepo) Get(query string) ([]*entity.Promotion, error) {
+	var results []*entity.Promotion
 	err := rp.db.Where(query).Find(&results).Error
 	return results, err
 }
 
-func (rp *promotionRepo) Update(input *entity.PromotionEntity) error {
+func (rp *promotionRepo) Update(input *entity.Promotion) error {
 	return rp.db.Updates(input).Error
 }
 
