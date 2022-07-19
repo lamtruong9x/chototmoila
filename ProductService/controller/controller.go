@@ -135,7 +135,7 @@ func (ctrl *controller) Update(c *gin.Context) {
 }
 
 func (ctrl *controller) superUpdate(input *dto.ProductUpdate, c *gin.Context) {
-	if err := c.ShouldBindJSON(&input); err != nil {
+	if err := c.ShouldBindJSON(input); err != nil {
 		log.Printf("Controller - Update: %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
